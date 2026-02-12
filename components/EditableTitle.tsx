@@ -7,18 +7,20 @@ import { useEffect, useRef, useState } from "react";
 interface EditableTitleProps {
   value: string;
   placeholder?: string;
+  onSave?: (next: string) => void | Promise<void>;
 }
 
 export const EditableTitle = ({
   value,
   placeholder = "Untitled",
+  onSave: onSaveProp,
 }: EditableTitleProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [draft, setDraft] = useState<string>(value);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const onSave = (next: string) => {
-    console.log(next);
+    onSaveProp?.(next);
   };
 
   useEffect(() => {
@@ -30,16 +32,17 @@ export const EditableTitle = ({
     }
   }, [isEditing]);
 
-  async function commit() {
+  const commit = async () => {
     const next = draft.trim() || placeholder;
     setIsEditing(false);
-    if (next !== value) await onSave(next);
-  }
 
-  function cancel() {
+    if (next !== value) onSave(next);
+  };
+
+  const cancel = () => {
     setDraft(value);
     setIsEditing(false);
-  }
+  };
 
   return (
     <div className="flex items-center gap-3">

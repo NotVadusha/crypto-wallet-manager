@@ -4,36 +4,49 @@ import {
   CardFooter,
   CardHeader,
 } from "@/components/ui/card";
-import PortfolioMetrics from "@/components/cards/MyWalletCard/PortfolioMetrics";
-import WalletInfo from "@/components/cards/MyWalletCard/WalletInfo";
-import WalletBalance from "@/components/cards/MyWalletCard/WalletBalance";
-import DepositButton from "@/components/buttons/DepositButton";
-import WithdrawButton from "@/components/buttons/WithdrawButton";
+import type { WalletData } from "@/lib/types";
+import { MyWalletHeader } from "./MyWalletHeader";
+import { WalletBalance } from "./WalletBalance";
+import { WalletActions } from "./WalletActions";
 
-const MyWalletCard = () => {
-  const usdcBalance = 984.42;
-  const portfolioBalance = 100000;
+export interface MyWalletCardProps {
+  walletData: WalletData;
+  dailyChange: number;
+  dailyChangePercent: number;
+}
 
+export default function MyWalletCard({
+  walletData,
+  dailyChange,
+  dailyChangePercent,
+}: MyWalletCardProps) {
   return (
-    <Card className="w-full max-w-3xl">
-      <CardHeader className="flex flex-row justify-between">
-        <WalletInfo />
-        <PortfolioMetrics
-          portfolioBalance={portfolioBalance}
-          usdcBalance={usdcBalance}
+    <Card className="w-full max-w-160 h-62 gap-5 p-5 rounded-md">
+      <CardHeader className="flex flex-row justify-between p-0">
+        <MyWalletHeader
+          address={walletData.address}
+          joinedAt={walletData.joinedAt ?? undefined}
+          portfolioValueUsd={walletData.portfolioValueUsd}
+          totalValueUsd={walletData.totalValueUsd}
         />
       </CardHeader>
 
-      <CardContent>
-        <WalletBalance />
+      <CardContent className="p-0">
+        <WalletBalance
+          totalValueUsd={walletData.totalValueUsd}
+          dailyChange={dailyChange}
+          dailyChangePercent={dailyChangePercent}
+        />
       </CardContent>
 
-      <CardFooter className="flex flex-row gap-2 h-12">
-        <DepositButton />
-        <WithdrawButton />
+      <CardFooter className="flex flex-row gap-2 h-11 p-0">
+        <WalletActions
+          address={walletData.address}
+          ethBalance={walletData.ethBalance}
+          tokenBalance={walletData.tokenBalance}
+          tokenSymbol={walletData.tokenSymbol}
+        />
       </CardFooter>
     </Card>
   );
-};
-
-export default MyWalletCard;
+}

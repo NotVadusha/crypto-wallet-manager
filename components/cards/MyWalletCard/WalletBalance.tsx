@@ -1,29 +1,65 @@
-import GrowthTriangle from "@/components/GrowthTriangle";
+"use client";
 
-const WalletBalance = () => {
-  const todayGrowth = 12.42;
-  const todayGrowthPercentage = (todayGrowth * 100).toFixed(2);
+import GrowthArrow from "@/components/GrowthArrow";
+import { NumberFlow } from "@/components/ui/number-flow";
+import { LABELS } from "./constants";
 
-  const isGrowthPositive = todayGrowth > 0;
+export interface WalletBalanceProps {
+  totalValueUsd: number;
+  dailyChange: number;
+  dailyChangePercent: number;
+}
 
-  const color = isGrowthPositive ? "#3CAB68" : "#FF5100";
+export function WalletBalance({
+  totalValueUsd,
+  dailyChange,
+  dailyChangePercent,
+}: WalletBalanceProps) {
+  const isGrowthPositive = dailyChange >= 0;
+  const colorClass = isGrowthPositive ? "text-profit" : "text-loss";
 
   return (
     <div className="flex flex-col">
-      <span className="text-[2.5rem]">984,42 USDC</span>
-      <div className="flex flex-row gap-2">
-        <span className={`text-[${color}] font-medium`}>
-          {isGrowthPositive ? "+" : "-"} {todayGrowth}%
+      <span className="text-[2.5rem]">
+        <NumberFlow
+          value={totalValueUsd}
+          format={{
+            style: "decimal",
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          }}
+        />
+        {" USDC"}
+      </span>
+      <div className="flex flex-row gap-2 items-center">
+        <span className={`${colorClass} font-medium text-sm`}>
+          <NumberFlow
+            value={dailyChange}
+            format={{
+              style: "currency",
+              currency: "USD",
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+              signDisplay: "always",
+            }}
+          />
         </span>
-
-        <span className={`text-[${color}] font-medium`}>
-          <GrowthTriangle value={todayGrowth} />
-          {todayGrowthPercentage}%
+        <span className={`${colorClass} font-medium text-sm space-x-1`}>
+          <GrowthArrow value={dailyChange} />
+          <NumberFlow
+            value={dailyChangePercent}
+            format={{
+              style: "percent",
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+              signDisplay: "never",
+            }}
+          />
         </span>
-        <span className="text-muted-foreground font-medium">Today</span>
+        <span className="text-muted-foreground font-medium text-sm">
+          {LABELS.today}
+        </span>
       </div>
     </div>
   );
-};
-
-export default WalletBalance;
+}
